@@ -42,6 +42,7 @@ function EmpTable() {
   };
 
   const closePopup = () => {
+    fetchEmployees(API);
     setPopUp(false);
     setUpdatePopUp(false);
   };
