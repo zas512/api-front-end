@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
-import useOutsideListner from "./OutsideListener";
+import { useState, useRef, useEffect } from "react";
+import useOutsideListener from "./OutsideListener";
 import Lottie from "lottie-react";
 import confirmed from "../anims/confirm.json";
 import denied from "../anims/denied.json";
 
-function EmpPopup({ closePopup }) {
+function UpdateEmp({ closePopup, empId }) {
   const [id, setId] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -13,14 +13,38 @@ function EmpPopup({ closePopup }) {
   const [animType, setAnimType] = useState(true);
   const outsideRef = useRef(null);
 
-  useOutsideListner(outsideRef, () => {
+  useOutsideListener(outsideRef, () => {
     closePopup();
   });
+
+  useEffect(() => {
+    if (empId) {
+      // Fetch existing employee data based on empId
+      const fetchEmployeeData = async () => {
+        try {
+          const res = await fetch(`http://localhost:8000/api/${empId}`);
+          if (res.ok) {
+            const employeeData = await res.json();
+            setId(employeeData.emp_id);
+            setFirstName(employeeData.first_name);
+            setLastName(employeeData.last_name);
+            setGender(employeeData.gender);
+          } else {
+            console.error("Failed to fetch employee data");
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      fetchEmployeeData();
+    }
+  }, [empId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newEmployee = {
+    const updatedEmployee = {
       emp_id: id,
       first_name: firstName,
       last_name: lastName,
@@ -28,19 +52,19 @@ function EmpPopup({ closePopup }) {
     };
 
     try {
-      const res = await fetch("http://localhost:8000/api/emp", {
-        method: "POST",
+      const res = await fetch(`http://localhost:8000/api/${empId}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newEmployee),
+        body: JSON.stringify(updatedEmployee),
       });
 
       if (res.ok) {
         resetForm();
       } else {
-        setAnimType((prevPopup) => !prevPopup);
-        console.error("Failed to add employee");
+        setAnimType(false);
+        console.error("Failed to update employee");
       }
     } catch (err) {
       console.error(err);
@@ -69,7 +93,7 @@ function EmpPopup({ closePopup }) {
           ref={outsideRef}
           className="flex flex-col items-center w-auto h-auto p-10 mt-20 rounded-lg newclass new bg-gray-50"
         >
-          <h1 className="mb-4 text-xl text-gray-900">Add new employee data</h1>
+          <h1 className="mb-4 text-xl text-gray-900">Update employee data</h1>
           <div className="mb-4">
             <label
               htmlFor="id"
@@ -146,7 +170,7 @@ function EmpPopup({ closePopup }) {
               type="submit"
               className="text-white mt-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             >
-              Add
+              Update
             </button>
           )}
         </div>
@@ -155,4 +179,4 @@ function EmpPopup({ closePopup }) {
   );
 }
 
-export default EmpPopup;
+export default UpdateEmp;
