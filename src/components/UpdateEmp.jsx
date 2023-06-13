@@ -22,7 +22,9 @@ function UpdateEmp({ closePopup, empId }) {
       // Fetch existing employee data based on empId
       const fetchEmployeeData = async () => {
         try {
-          const res = await fetch(`http://localhost:8000/api/${empId}`);
+          const res = await fetch(
+            `https://api-with-crud.vercel.app/api/${empId}`
+          );
           if (res.ok) {
             const employeeData = await res.json();
             setId(employeeData.emp_id);
@@ -52,7 +54,7 @@ function UpdateEmp({ closePopup, empId }) {
     };
 
     try {
-      const res = await fetch(`http://localhost:8000/api/${empId}`, {
+      const res = await fetch(`https://api-with-crud.vercel.app/api/${empId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

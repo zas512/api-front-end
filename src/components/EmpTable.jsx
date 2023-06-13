@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import EmpPopup from "./EmpPopup";
 import UpdateEmp from "./UpdateEmp";
 
-const API = "http://localhost:8000/api/emp";
+const API = "https://api-with-crud.vercel.app/api/emp";
 
 function EmpTable() {
   const [emps, setEmps] = useState([]);
@@ -32,7 +32,7 @@ function EmpTable() {
   //delete emp func
   const deleteEmployee = async (empId) => {
     try {
-      await fetch(`http://localhost:8000/api/${empId}`, {
+      await fetch(`https://api-with-crud.vercel.app/api/${empId}`, {
         method: "DELETE",
       });
       setEmps((prevEmps) => prevEmps.filter((emp) => emp.emp_id !== empId));
